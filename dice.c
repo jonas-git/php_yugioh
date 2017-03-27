@@ -23,8 +23,6 @@
 // OF SUCH DAMAGE.
 //
 
-// #include <stddef.h>
-
 #include <ctype.h>
 #include <stdlib.h>
 #include <wchar.h>

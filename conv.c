@@ -6,6 +6,8 @@
 
 #include "conv.h"
 
+// source:
+// http://stackoverflow.com/questions/4607413/c-library-to-convert-unicode-code-points-to-utf8
 char* wcs_to_mbs(const wchar_t *src) {
 	size_t size = 0;
 	const wchar_t *current = src;
@@ -69,6 +71,8 @@ char* wcs_to_mbs(const wchar_t *src) {
 	return dest;
 }
 
+// source:
+// http://stackoverflow.com/questions/2948308/how-do-i-read-utf-8-characters-via-a-pointer/2953960#2953960
 wchar_t* mbs_to_wcs(const char *src) {
 #define IS_IN_RANGE(c, f, l) (((c) >= (f)) && ((c) <= (l)))
 #define RETURN_IF(b) if (b) { free(wcs); return NULL; }
