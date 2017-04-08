@@ -1,7 +1,6 @@
 #ifndef YUGIOH_H
 #define YUGIOH_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <wchar.h>
@@ -10,7 +9,7 @@ struct yugioh_entry
 {
 	wchar_t *name;
 	double distance;
-	bool contains;
+	int contains;
 };
 
 struct yugioh_card
@@ -34,5 +33,6 @@ struct yugioh_card
 struct yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_size, int *out_err);
 struct yugioh_card* yugioh_search(int32_t id, const char *path, int *out_err);
 struct yugioh_card* yugioh_search_n(const wchar_t *name, const char *in_path, const char *path, int *out_err);
+void yugioh_destroy_card(struct yugioh_card *card);
 
 #endif // !TEST_H

@@ -1,15 +1,13 @@
 #include <locale.h>
 #include <sqlite3.h>
-#include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 
 #include "yugioh.h"
-#include "conv.h"
 #include "dice.h"
+#include "util.h"
 
 #define CHECK_ALLOC(ptr) if (!ptr) { exit(EXIT_FAILURE); }
 
@@ -50,15 +48,15 @@ inline yugioh_id_node* new_id_node()
 	return mem;
 }
 
-bool sqlite3_check(int err_code, int *out_err, sqlite3 *db, sqlite3_stmt *stmt)
+int sqlite3_check(int err_code, int *out_err, sqlite3 *db, sqlite3_stmt *stmt)
 {
 	if (err_code ^ SQLITE_OK) {
 		if (out_err) { *out_err = err_code; }
 		if (stmt) sqlite3_finalize(stmt);
 		if (db) sqlite3_close(db);
-		return false;
+		return 0;
 	}
-	return true;
+	return 1;
 }
 
 int sort_predicate(const void* p1, const void* p2)
@@ -75,10 +73,21 @@ int sort_predicate(const void* p1, const void* p2)
 	return a.distance > b.distance ? -1 : 1;
 }
 
+void yugioh_destroy_card(struct yugioh_card *card)
+{
+	if (!card)
+		return;
+
+	free(card->ids);
+	free(card->name);
+	free(card->desc);
+	free(card);
+}
+
 yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_size, int *out_err)
 {
 	setlocale(LC_ALL, "en_US.UTF-8");
-	wchar_t *name_lower = wcs_to_lower_s(name, wcslen(name));
+	wchar_t *name_lower = u_wcstolower_s(name, wcslen(name));
 
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
@@ -102,14 +111,16 @@ yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_si
 	while (1) {
 		++list_size;
 
-		wchar_t *cdb_name = mbs_to_wcs(sqlite3_column_text(stmt, 0));
-		wchar_t *cdb_name_lower = wcs_to_lower_s(cdb_name, wcslen(cdb_name) + 1);
+		wchar_t *cdb_name = u_mbstowcs(sqlite3_column_text(stmt, 0));
+		wchar_t *cdb_name_lower = u_wcstolower_s(cdb_name, wcslen(cdb_name) + 1);
 
 		current_node->data = (yugioh_entry *)calloc(1, sizeof(yugioh_entry));
 		CHECK_ALLOC(current_node->data);
 		current_node->data->name = cdb_name;
 		current_node->data->distance = dice_coefficient(name_lower, cdb_name_lower);
 		current_node->data->contains = !!wcsstr(cdb_name_lower, name_lower);
+
+		free(cdb_name_lower);
 
 		err_code = sqlite3_step(stmt);
 		if (err_code ^ SQLITE_ROW) {
@@ -139,6 +150,8 @@ yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_si
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 
+	free(name_lower);
+
 	return entries;
 }
 
@@ -153,8 +166,8 @@ yugioh_card* to_card(sqlite3_stmt *stmt)
 
 	card->ids = NULL;
 	card->original_id = NULL;
-	card->name = mbs_to_wcs(sqlite3_column_text(stmt, 1));
-	card->desc = mbs_to_wcs(sqlite3_column_text(stmt, 2));
+	card->name = u_mbstowcs(sqlite3_column_text(stmt, 1));
+	card->desc = u_mbstowcs(sqlite3_column_text(stmt, 2));
 	card->ot = sqlite3_column_int(stmt, 3);
 	card->setcode = sqlite3_column_int(stmt, 5);
 	card->type = sqlite3_column_int(stmt, 6);
@@ -250,12 +263,9 @@ struct yugioh_card* yugioh_search_n(const wchar_t *name, const char *in_path, co
 	err_code = sqlite3_open(in_path, &db);
 	if (!sqlite3_check(err_code, out_err, db, NULL)) { return NULL; }
 
-	const wchar_t *name_wcs;
-	if (strcmp(in_path, path) == 0) {
-		name_wcs = name;
-	}
-	else {
-		char *name_mbs = wcs_to_mbs(name);
+	wchar_t *name_wcs = NULL;
+	if (strcmp(in_path, path) != 0) {
+		char *name_mbs = u_wcstombs(name);
 
 		sqlite3_prepare(db, "SELECT id FROM texts WHERE name LIKE ? COLLATE NOCASE LIMIT 1", -1, &stmt, NULL);
 		err_code = sqlite3_bind_text(stmt, 1, name_mbs, -1, NULL);
@@ -285,21 +295,26 @@ struct yugioh_card* yugioh_search_n(const wchar_t *name, const char *in_path, co
 			sqlite3_close(db);
 			return NULL;
 		}
-		name_wcs = mbs_to_wcs(sqlite3_column_text(stmt, 0));
+		name_wcs = u_mbstowcs(sqlite3_column_text(stmt, 0));
 
 		sqlite3_finalize(stmt);
+		free(name_mbs);
 	}
-	
+
+	char *name_mbs = u_wcstombs(name_wcs ? name_wcs : name);
 	sqlite3_prepare(db, "SELECT t.id, t.name, t.desc, d.ot, d.alias, d.setcode,"
 		" d.type, d.atk, d.def, d.level, d.race, d.attribute, d.category"
 		" FROM texts AS t JOIN datas AS d ON t.id = d.id WHERE t.name=? COLLATE NOCASE", -1, &stmt, NULL);
-	err_code = sqlite3_bind_text(stmt, 1, wcs_to_mbs(name_wcs) /*name_wcs*/, -1, NULL);
+	err_code = sqlite3_bind_text(stmt, 1, name_mbs, -1, NULL);
 	if (!sqlite3_check(err_code, out_err, db, stmt)) { return NULL; }
 
 	yugioh_card *card = to_card(stmt);
 
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
+
+	free(name_mbs);
+	free(name_wcs);
 
 	return card;
 }

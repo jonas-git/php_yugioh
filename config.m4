@@ -10,7 +10,10 @@ if test "$PHP_YUGIOH" != "no"; then
   PHP_NEW_EXTENSION(yugioh,
     php_yugioh.c \
     yugioh.c \
-    conv.c \
-    dice.c,
+    util.c \
+    dice.c \
+    replay_reader.c \
+    lzma/Alloc.c \
+    lzma/LzmaDec.c,
     $ext_shared)
 fi

@@ -1,0 +1,3 @@
+[submodule "lzma"]
+	path = lzma
+	url = https://github.com/jljusten/LZMA-SDK.git

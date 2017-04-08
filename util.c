@@ -1,14 +1,14 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 
-#include "conv.h"
+#include "php.h"
+#include "util.h"
 
-// source:
-// http://stackoverflow.com/questions/4607413/c-library-to-convert-unicode-code-points-to-utf8
-char* wcs_to_mbs(const wchar_t *src) {
+char* u_wcstombs(const wchar_t *src) {
 	size_t size = 0;
 	const wchar_t *current = src;
 	
@@ -71,9 +71,7 @@ char* wcs_to_mbs(const wchar_t *src) {
 	return dest;
 }
 
-// source:
-// http://stackoverflow.com/questions/2948308/how-do-i-read-utf-8-characters-via-a-pointer/2953960#2953960
-wchar_t* mbs_to_wcs(const char *src) {
+wchar_t* u_mbstowcs(const char *src) {
 #define IS_IN_RANGE(c, f, l) (((c) >= (f)) && ((c) <= (l)))
 #define RETURN_IF(b) if (b) { free(wcs); return NULL; }
 
@@ -189,7 +187,7 @@ wchar_t* mbs_to_wcs(const char *src) {
 	return dest;
 }
 
-wchar_t* wcs_to_lower(wchar_t *str) {
+wchar_t* u_wcstolower(wchar_t *str) {
 	wchar_t *current = str;
 	while (*current++ != '\0') {
 		*current = towlower(*current);
@@ -197,11 +195,42 @@ wchar_t* wcs_to_lower(wchar_t *str) {
 	return str;
 }
 
-wchar_t* wcs_to_lower_s(const wchar_t *str, size_t size) {
+wchar_t* u_wcstolower_s(const wchar_t *str, size_t size) {
 	wchar_t *str_lower = (wchar_t *)malloc(size * sizeof(wchar_t));
 	size_t i;
 	for (i = 0llu; i < size; ++i) {
 		str_lower[i] = towlower(str[i]);
 	}
 	return str_lower;
+}
+
+int u_is_number(const char *str, int *out)
+{
+	int number = 0;
+	for (; *str != '\0'; ++str)
+	{
+		int code = (int)*str;
+		if (code < 48 || code > 57)
+			return 0;
+		number *= 10;
+		number += code - 48;
+	}
+	*out = number;
+	return 1;
+}
+
+zval u_call_function(zval *object, const char *name, zval *params, uint32_t param_count)
+{
+	zval function_name, return_value;
+	ZVAL_STRING(&function_name, name);
+	call_user_function(&Z_CE_P(object)->function_table, object, &function_name, &return_value, param_count, params);
+	return return_value;
+}
+
+HashTable *u_create_table(uint32_t size)
+{
+	HashTable *ht;
+	ALLOC_HASHTABLE(ht);
+	zend_hash_init(ht, size, NULL, ZVAL_PTR_DTOR, 0);
+	return ht;
 }

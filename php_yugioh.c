@@ -1,36 +1,29 @@
 #include <locale.h>
 #include <sqlite3.h>
-#include <stdbool.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 
+#include "php.h"
+#include "php_yugioh.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "php.h"
-#include "php_yugioh.h"
+
 #include "yugioh.h"
-#include "conv.h"
+#include "replay_reader.h"
+#include "util.h"
 
-#ifndef PHP_FE_END
-#define PHP_FE_END { NULL, NULL, NULL }
-#endif
-#define STR_ARG(str) &str, &str##_len
-#define RETURN_EMPTY_ARR() RETURN_ARR(allocate_hash_table(0, ZVAL_PTR_DTOR, 0))
-
-zend_class_entry *yugioh_class_entry = NULL;
-zend_class_entry *yugioh_card_class_entry = NULL;
+static zend_class_entry *yugioh_class_entry = NULL;
+static zend_class_entry *yugioh_card_class_entry = NULL;
+static zend_class_entry *yugioh_replay_class_entry = NULL;
 static zend_object_handlers yugioh_object_handlers;
 
-static zend_object* yugioh_create_object(zend_class_entry *ce);
-static HashTable *allocate_hash_table(uint32_t nSize, dtor_func_t pDestructor, zend_bool persistent ZEND_FILE_LINE_DC);
-static int cstoi(const char *s);
+static void replay_to_zval(zval **object, struct rr_replay *replay);
 
-/* module entry */
+// Module entry
 // {{{
 zend_module_entry yugioh_module_entry = {
 	STANDARD_MODULE_HEADER_EX,
@@ -42,7 +35,7 @@ zend_module_entry yugioh_module_entry = {
 	PHP_MSHUTDOWN(yugioh),
 	NULL,
 	NULL,
-	NULL,
+	PHP_MINFO(yugioh),
 	PHP_YUGIOH_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
@@ -52,8 +45,23 @@ zend_module_entry yugioh_module_entry = {
 ZEND_GET_MODULE(yugioh)
 #endif
 
-/* argument information */
+// Argument information
 // {{{
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay___construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_from_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, file)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_read_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, file)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_decode, 0, 0, 1)
+	ZEND_ARG_INFO(0, data)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_card___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -73,7 +81,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_db_remove, 0, 0, 1)
 	ZEND_ARG_INFO(0, lang)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_match, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_match, 0, 0, 2)
 	ZEND_ARG_INFO(0, name)
 	ZEND_ARG_INFO(0, lang)
 ZEND_END_ARG_INFO()
@@ -85,7 +93,18 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_search, 0, 0, 3)
 ZEND_END_ARG_INFO()
 // }}}
 
-/* yugioh card class method entries */
+// yugioh\replay - Class method entries
+// {{{
+static const zend_function_entry yugioh_replay_class_method_entry[] = {
+	PHP_ME(yugioh_replay, __construct, arginfo_yugioh_replay___construct, ZEND_ACC_PUBLIC)
+	PHP_ME(yugioh_replay, from_file, arginfo_yugioh_replay_from_file, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+	PHP_ME(yugioh_replay, read_file, arginfo_yugioh_replay_read_file, ZEND_ACC_PUBLIC)
+	PHP_ME(yugioh_replay, decode, arginfo_yugioh_replay_decode, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+// }}}
+
+// yugioh\card - Class method entries
 // {{{
 static const zend_function_entry yugioh_card_class_method_entry[] = {
 	PHP_ME(yugioh_card, __construct, arginfo_yugioh_card___construct, ZEND_ACC_PUBLIC)
@@ -93,7 +112,7 @@ static const zend_function_entry yugioh_card_class_method_entry[] = {
 };
 // }}}
 
-/* yugioh class method entries */
+// yugioh - Class method entries
 // {{{
 static const zend_function_entry yugioh_class_method_entry[] = {
 	PHP_ME(yugioh, __construct, arginfo_yugioh___construct, ZEND_ACC_PUBLIC)
@@ -106,7 +125,95 @@ static const zend_function_entry yugioh_class_method_entry[] = {
 };
 // }}}
 
-/* public function yugioh\card::__construct(void) : void */
+// public function yugioh\replay::__construct(void) : void
+// {{{
+PHP_METHOD(yugioh_replay, __construct)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		return;
+
+	zval *self = getThis();
+	HashTable *players = u_create_table(0);
+
+	zval players_zv;
+	ZVAL_ARR(&players_zv, players);
+	zend_update_property(yugioh_replay_class_entry, self, "players", sizeof("players") - 1, &players_zv);
+}
+// }}}
+
+// public static function yugioh\replay::from_file(string $file) : yugioh\replay
+// {{{
+PHP_METHOD(yugioh_replay, from_file)
+{
+	char *file = NULL;
+	size_t file_len;
+
+	int argc = ZEND_NUM_ARGS();
+	if (zend_parse_parameters(argc, "s", STR_ARG(file)) == FAILURE)
+		RETURN_NULL();
+
+	object_init_ex(return_value, yugioh_replay_class_entry);
+	u_call_function(return_value, "__construct", NULL, 0);
+
+	if (argc < 1) 
+		RETURN_NULL();
+
+	zval *argv = (zval *)safe_emalloc(sizeof(zval), argc, 0);
+	zend_get_parameters_array_ex(argc, argv);
+
+	u_call_function(return_value, "read_file", argv, argc);
+
+	efree(argv);
+}
+// }}}
+
+// public function yugioh\replay::read_file(string $file) : void
+// {{{
+PHP_METHOD(yugioh_replay, read_file)
+{
+	char *file = NULL;
+	size_t file_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(file)) == FAILURE)
+		return;
+
+	char file_path[MAXPATHLEN];
+	VCWD_REALPATH(file, file_path);
+	if (file_path[0] == 0 || !file_path) {
+		php_error_docref(NULL, E_ERROR, "file does not exit");
+		return;
+	}
+
+	struct rr_replay *replay = rr_read_replay(file_path);
+	if (!replay)
+		return;
+
+	zval *self = getThis();
+	replay_to_zval(&self, replay);
+	rr_destroy_replay(replay);
+}
+// }}}
+
+// public function yugioh\replay::decode(string $data) : void
+// {{{
+PHP_METHOD(yugioh_replay, decode)
+{
+	unsigned char *data = NULL;
+	size_t data_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(data)) == FAILURE)
+		return;
+
+	struct rr_replay *replay = rr_read_replay_a(data, data_len);
+	if (!replay)
+		return;
+
+	zval *self = getThis();
+	replay_to_zval(&self, replay);
+	rr_destroy_replay(replay);
+}
+
+// public function yugioh\card::__construct(void) : void
 // {{{
 PHP_METHOD(yugioh_card, __construct)
 {
@@ -114,7 +221,7 @@ PHP_METHOD(yugioh_card, __construct)
 		return;
 
 	zval *self = getThis();
-	HashTable *ids = allocate_hash_table(0, ZVAL_PTR_DTOR, 0);
+	HashTable *ids = u_create_table(0);
 
 	zval ids_zv;
 	ZVAL_ARR(&ids_zv, ids);
@@ -122,7 +229,7 @@ PHP_METHOD(yugioh_card, __construct)
 }
 // }}}
 
-/* public function yugioh::__construct(void) : void */
+// public function yugioh::__construct(void) : void
 // {{{
 PHP_METHOD(yugioh, __construct)
 {
@@ -130,7 +237,7 @@ PHP_METHOD(yugioh, __construct)
 		return;
 
 	zval *self = getThis();
-	HashTable *databases = allocate_hash_table(0, ZVAL_PTR_DTOR, 0);
+	HashTable *databases = u_create_table(0);
 
 	zval databases_zv;
 	ZVAL_ARR(&databases_zv, databases);
@@ -138,7 +245,7 @@ PHP_METHOD(yugioh, __construct)
 }
 // }}}
 
-/* public function yugioh::db(string $language, string $path) : void */
+// public function yugioh::db(string $language, string $path) : void
 // {{{
 PHP_METHOD(yugioh, db)
 {
@@ -158,7 +265,7 @@ PHP_METHOD(yugioh, db)
 }
 // }}}
 
-/* public function yugioh::dbs(array $paths) : void */
+// public function yugioh::dbs(array $paths) : void
 // {{{
 PHP_METHOD(yugioh, dbs)
 {
@@ -187,7 +294,7 @@ PHP_METHOD(yugioh, dbs)
 }
 // }}}
 
-/* public function yugioh::db_remove(string $language) : void */
+// public function yugioh::db_remove(string $language) : void
 // {{{
 PHP_METHOD(yugioh, db_remove)
 {
@@ -208,7 +315,7 @@ PHP_METHOD(yugioh, db_remove)
 }
 // }}}
 
-/* public function yugioh::match(string $name, string $inlang, number $count = 1) : array */
+// public function yugioh::match(string $name, string $inlang, number $count = 1) : array
 // {{{
 PHP_METHOD(yugioh, match)
 {
@@ -216,9 +323,8 @@ PHP_METHOD(yugioh, match)
 	size_t name_len, lang_len;
 	long count = 1l;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss|l", STR_ARG(name), STR_ARG(lang), &count) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss|l", STR_ARG(name), STR_ARG(lang), &count) == FAILURE)
 		RETURN_EMPTY_ARR();
-	}
 
 	zval *self = getThis(), *rv = NULL;
 	zval *databases_zv = zend_read_property(yugioh_class_entry, self, "dbs", sizeof("dbs") - 1, 0, rv);
@@ -227,33 +333,32 @@ PHP_METHOD(yugioh, match)
 	zval lang_z;
 	ZVAL_STRING(&lang_z, lang);
 	zend_string *lang_zs = Z_STR(lang_z);
-	if (!zend_hash_exists_ind(databases, lang_zs)) {
+	if (!zend_hash_exists_ind(databases, lang_zs))
 		RETURN_EMPTY_ARR();
-	}
 
 	char lang_path[MAXPATHLEN];
 	VCWD_REALPATH(Z_STR(*zend_hash_find(databases, lang_zs))->val, lang_path);
 
 	int err = 0;
 	size_t size = 0;
-	wchar_t *name_wcs = mbs_to_wcs(name);
+	wchar_t *name_wcs = u_mbstowcs(name);
 	struct yugioh_entry *entries = yugioh_match(name_wcs, lang_path, &size, &err);
+	free(name_wcs);
 
 	if (err) {
 		php_error_docref(NULL, E_ERROR, "sqlite3 error: %s (code: %i)", sqlite3_errstr(err), err);
-		RETURN_FALSE;
+		return;
 	}
-	if (!entries) {
+	if (!entries)
 		RETURN_EMPTY_ARR();
-	}
 
-	HashTable *result = allocate_hash_table(count < 0 ? 0 : count, ZVAL_PTR_DTOR, 0);
+	HashTable *result = u_create_table(count < 0 ? 0 : count);
 	size_t i;
 	for (i = 0llu; i < count && i < size; ++i) {
 		struct yugioh_entry entry = entries[i];
 
-		HashTable *entry_ht = allocate_hash_table(3, ZVAL_PTR_DTOR, 0);
-		char *entry_name = wcs_to_mbs(entry.name);
+		HashTable *entry_ht = u_create_table(3);
+		char *entry_name = u_wcstombs(entry.name);
 
 		zval name_zv, distance_zv, contains_zv;
 		ZVAL_STRING(&name_zv, entry_name);
@@ -267,6 +372,8 @@ PHP_METHOD(yugioh, match)
 		zval entry_zv;
 		ZVAL_ARR(&entry_zv, entry_ht);
 		zend_hash_next_index_insert(result, &entry_zv);
+
+		free(entry_name);
 	}
 
 	free(entries);
@@ -274,49 +381,57 @@ PHP_METHOD(yugioh, match)
 }
 // }}}
 
-/* public function search(string $any, string $inlang, string $lang) */
+// public function yugioh::search(string $any, string $inlang, string $lang) : yugioh\card
 // {{{
 PHP_METHOD(yugioh, search)
 {
 	char *name, *inlang, *lang;
 	size_t name_len, inlang_len, lang_len;
 
-	uint32_t argc = ZEND_NUM_ARGS();
-	if (zend_parse_parameters(argc, "sss", STR_ARG(name), STR_ARG(inlang), STR_ARG(lang)) == FAILURE) {
-		RETURN_FALSE;
-	}
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "sss", STR_ARG(name), STR_ARG(inlang), STR_ARG(lang)) == FAILURE)
+		RETURN_NULL();
 
 	zval *self = getThis(), *rv;
 	zval *databases_zv = zend_read_property(yugioh_class_entry, self, "dbs", sizeof("dbs") - 1, 0, rv);
 	HashTable *databases = Z_ARR_P(databases_zv);
 
-	zval inlang_z, lang_z;
-	ZVAL_STRING(&inlang_z, inlang);
+	zval lang_z;
 	ZVAL_STRING(&lang_z, lang);
-	zend_string *inlang_zs = Z_STR(inlang_z), *lang_zs = Z_STR(lang_z);
-	if (!zend_hash_exists_ind(databases, inlang_zs) || !zend_hash_exists_ind(databases, lang_zs)) {
-		RETURN_FALSE;
-	}
+	zend_string *lang_zs = Z_STR(lang_z);
+	if (!zend_hash_exists_ind(databases, lang_zs))
+		RETURN_NULL();
 
-	char inlang_path[MAXPATHLEN], lang_path[MAXPATHLEN];
-	VCWD_REALPATH(Z_STR(*zend_hash_find(databases, inlang_zs))->val, inlang_path);
+	char lang_path[MAXPATHLEN];
 	VCWD_REALPATH(Z_STR(*zend_hash_find(databases, lang_zs))->val, lang_path);
 
-	int id = cstoi(name), err = 0;
-	struct yugioh_card *card = id
-		? yugioh_search(id, lang_path, &err)
-		: yugioh_search_n(mbs_to_wcs(name), inlang_path, lang_path, &err);
+	int id = 0, err = 0;
+	struct yugioh_card *card = NULL;
+	if (u_is_number(name, &id))
+		card = yugioh_search(id, lang_path, &err);
+	else {
+		zval inlang_z;
+		ZVAL_STRING(&inlang_z, inlang);
+		zend_string *inlang_zs = Z_STR(inlang_z);
+		if (!zend_hash_exists_ind(databases, inlang_zs))
+			RETURN_NULL();
+
+		char inlang_path[MAXPATHLEN];
+		VCWD_REALPATH(Z_STR(*zend_hash_find(databases, inlang_zs))->val, inlang_path);
+
+		wchar_t *name_wcs = u_mbstowcs(name);
+		card = yugioh_search_n(name_wcs, inlang_path, lang_path, &err);
+		free(name_wcs);
+	}
 
 	if (err) {
 		php_error_docref(NULL, E_ERROR, "sqlite3 error: %s (code: %i)", sqlite3_errstr(err), err);
-		RETURN_FALSE;
+		return;
 	}
-	if (!card) {
-		RETURN_FALSE;
-	}
+	if (!card)
+		RETURN_NULL();
 
 	object_init_ex(return_value, yugioh_card_class_entry);
-	HashTable *ids = allocate_hash_table(8, ZVAL_PTR_DTOR, 0);
+	HashTable *ids = u_create_table(8);
 	
 	size_t i;
 	for (i = 0; i < card->ids_size; ++i) {
@@ -325,8 +440,8 @@ PHP_METHOD(yugioh, search)
 		zend_hash_next_index_insert(ids, &zv);
 	}
 
-	char *name_mbs = wcs_to_mbs(card->name);
-	char *desc_mbs = wcs_to_mbs(card->desc);
+	char *name_mbs = u_wcstombs(card->name);
+	char *desc_mbs = u_wcstombs(card->desc);
 
 	zval z_ids, z_name_mbs, z_desc_mbs, z_ot, z_setcode, z_type, z_atk, z_def, z_level, z_race, z_attribute, z_category;
 	ZVAL_ARR(&z_ids, ids);
@@ -360,37 +475,73 @@ PHP_METHOD(yugioh, search)
 	zend_update_property(yugioh_card_class_entry, return_value, "attribute", sizeof("attribute") - 1, &z_attribute);
 	zend_update_property(yugioh_card_class_entry, return_value, "category", sizeof("category") - 1, &z_category);
 
-	// deallocate card object's memory.
+	free(name_mbs);
+	free(desc_mbs);
+	yugioh_destroy_card(card);
 }
 // }}}
 
-// {{{
-static HashTable *allocate_hash_table(uint32_t nSize, dtor_func_t pDestructor, zend_bool persistent ZEND_FILE_LINE_DC)
+static void replay_to_zval(zval **object, struct rr_replay *replay)
 {
-	HashTable *ht;
-	ALLOC_HASHTABLE(ht);
-	zend_hash_init(ht, nSize, NULL, pDestructor, persistent);
-	return ht;
-}
-// }}}
+	if (!object || !*object)
+		return;
 
-// {{{
-static int cstoi(const char *s)
-{
-	int result = 0;
-	for (; *s != '\0'; ++s)
-	{
-		int code = (int)*s;
-		if (code < 48 || code > 57)
-			return 0;
-		result *= 10;
-		result += code - 48;
+	zval *zend_value = *object;
+
+	zval life_points_zv, hand_count_zv, draw_count_zv;
+	ZVAL_LONG(&life_points_zv, replay->life_points);
+	ZVAL_LONG(&hand_count_zv, replay->hand_count);
+	ZVAL_LONG(&draw_count_zv, replay->draw_count);
+	zend_update_property(yugioh_replay_class_entry, zend_value, "life_points", sizeof("life_points") - 1, &life_points_zv);
+	zend_update_property(yugioh_replay_class_entry, zend_value, "hand_count", sizeof("hand_count") - 1, &hand_count_zv);
+	zend_update_property(yugioh_replay_class_entry, zend_value, "draw_count", sizeof("draw_count") - 1, &draw_count_zv);
+
+	zval *rv = NULL;
+	zval *players_zv = zend_read_property(yugioh_replay_class_entry, zend_value, "players", sizeof("players") - 1, 0, rv);
+	HashTable *players = Z_ARR_P(players_zv);
+
+	int32_t i;
+	size_t j;
+	for (i = 0; i < replay->player_count; ++i) {
+		char *player = replay->players[i];
+		struct rr_deck_info deck = replay->decks[i];
+
+		if (deck.size_main == 0) {
+			zval null_zv;
+			ZVAL_NULL(&null_zv);
+			zend_hash_next_index_insert(players, &null_zv);
+			continue;
+		}
+
+		HashTable *main_deck_ht = u_create_table(deck.size_main);
+		for (j = 0; j < deck.size_main; ++j) {
+			zval card_zv;
+			ZVAL_LONG(&card_zv, deck.main_deck[j]);
+			zend_hash_next_index_insert(main_deck_ht, &card_zv);
+		}
+
+		HashTable *extra_deck_ht = u_create_table(deck.size_extra);
+		for (j = 0; j < deck.size_extra; ++j) {
+			zval card_zv;
+			ZVAL_LONG(&card_zv, deck.extra_deck[j]);
+			zend_hash_next_index_insert(extra_deck_ht, &card_zv);
+		}
+
+		HashTable *deck_ht = u_create_table(2);
+		zval player_zv, main_deck_zv, extra_deck_zv;
+		ZVAL_STRING(&player_zv, player);
+		ZVAL_ARR(&main_deck_zv, main_deck_ht);
+		ZVAL_ARR(&extra_deck_zv, extra_deck_ht);
+		zend_hash_str_add(deck_ht, "name", 4, &player_zv);
+		zend_hash_str_add(deck_ht, "main_deck", 9, &main_deck_zv);
+		zend_hash_str_add(deck_ht, "extra_deck", 10, &extra_deck_zv);
+
+		zval deck_zv;
+		ZVAL_ARR(&deck_zv, deck_ht);
+		zend_hash_next_index_insert(players, &deck_zv);
 	}
-	return result;
 }
-// }}}
 
-// {{{
 static zend_object* yugioh_create_object(zend_class_entry *ce)
 {
 	zend_object *zo;
@@ -403,9 +554,9 @@ static zend_object* yugioh_create_object(zend_class_entry *ce)
 	zo->handlers = &yugioh_object_handlers;
 	return zo;
 }
-// }}}
 
-/* {{{ PHP_MINFO_FUNCTION */
+// PHP module information
+// {{{
 PHP_MINFO_FUNCTION(yugioh)
 {
 	php_info_print_table_start();
@@ -414,13 +565,26 @@ PHP_MINFO_FUNCTION(yugioh)
 	php_info_print_table_end();
 	DISPLAY_INI_ENTRIES();
 }
-/* }}} */
+// }}}
 
-/* PHP_MINIT_FUNCTION */
+// PHP module initialization
 // {{{
 PHP_MINIT_FUNCTION(yugioh)
 {
-	/* class yugioh\card */
+	// class yugioh\replay
+	// {{{
+	zend_class_entry replay_ce;
+	INIT_CLASS_ENTRY(replay_ce, "yugioh\\replay", yugioh_replay_class_method_entry);
+	yugioh_replay_class_entry = zend_register_internal_class(&replay_ce);
+	yugioh_replay_class_entry->create_object = yugioh_create_object;
+
+	zend_declare_property_long(yugioh_replay_class_entry, "life_points", sizeof("life_points") - 1, 0, ZEND_ACC_PUBLIC);
+	zend_declare_property_long(yugioh_replay_class_entry, "hand_count", sizeof("hand_count") - 1, 0, ZEND_ACC_PUBLIC);
+	zend_declare_property_long(yugioh_replay_class_entry, "draw_count", sizeof("draw_count") - 1, 0, ZEND_ACC_PUBLIC);
+	zend_declare_property_null(yugioh_replay_class_entry, "players", sizeof("players") - 1, ZEND_ACC_PUBLIC);
+	// }}}
+
+	// class yugioh\card
 	// {{{
 	zend_class_entry card_ce;
 	INIT_CLASS_ENTRY(card_ce, "yugioh\\card", yugioh_card_class_method_entry);
@@ -442,7 +606,7 @@ PHP_MINIT_FUNCTION(yugioh)
 	zend_declare_property_long(yugioh_card_class_entry, "category", sizeof("category") - 1, 0, ZEND_ACC_PUBLIC);
 	// }}}
 
-	/* class yugioh */
+	// class yugioh
 	// {{{
 	zend_class_entry ce;
 	INIT_CLASS_ENTRY(ce, "yugioh", yugioh_class_method_entry);
@@ -460,7 +624,7 @@ PHP_MINIT_FUNCTION(yugioh)
 }
 // }}}
 
-/* PHP_MSHUTDOWN_FUNCTION */
+// PHP module shutdown
 // {{{
 PHP_MSHUTDOWN_FUNCTION(yugioh)
 {
