@@ -77,12 +77,6 @@ void extract_player_name(char **player, const byte **data)
 	}
 	data_byte += 2 * (RR_NAME_SIZE - i);
 
-	// wchar_t *player_name_wcs = u_mbstowcs(player_name);
-	// char *player_name_mbs = u_wcstombs(player_name_wcs);
-	// char *player_name_mbs = u_wcstombs(player_name_wcs);
-	// free(player_name);
-
-	// *player = player_name_mbs ? player_name_mbs : player_name;
 	*player = player_name;
 	*data = data_byte;
 }
