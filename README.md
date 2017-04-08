@@ -28,10 +28,10 @@ Add **`sqlite3.c`** to the source files and set the following configuration prop
 
 * `C/C++ > General > Additional Include Directories`:  
   - The directory containing **`sqlite3.h`**  
-  - *`php-source`*, *`php-source\main`*, *`php-source\Zend`*, *`php-source\TSRM`* and *`php-source\win32`  
+  - *`php-source`*, *`php-source\main`*, *`php-source\Zend`*, *`php-source\TSRM`* and *`php-source\win32`*  
 
 * `Linker > General > Additional Library Directories`:  
-  - **`php\dev`** containing **`php7ts.lib`**  
+  - *`php\dev`* containing **`php7ts.lib`**  
   
 * `Linker > Input > Additional Dependencies`:  
   - **`php7ts.lib`**
