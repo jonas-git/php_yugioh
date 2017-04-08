@@ -12,12 +12,14 @@
     <ClCompile Include="lzma\C\Alloc.c">
       <Filter>lzma</Filter>
     </ClCompile>
+    <ClCompile Include="replay_reader.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dice.h" />
     <ClInclude Include="php_yugioh.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="yugioh.h" />
+    <ClInclude Include="replay_reader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="lzma">
