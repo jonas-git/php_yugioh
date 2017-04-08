@@ -6,22 +6,23 @@ Yu-Gi-Oh! PHP extension.
 $ git clone https://github.com/jonas-vanen/php_yugioh.git --recursive
 ```
 
-## Linux
-#### Requirements
+## Building
+### Linux
+##### Requirements
 * PHP version `7.*`
 * SQLite developer package (sqlite-devel)
-#### Compiling
+##### Compiling
 ```
 $ phpize
 $ ./configure
 $ make
 ```
 
-## Windows
-#### Requirements
+### Windows
+##### Requirements
 * PHP version `7.*` (binaries and source)
 * SQLite amalgamation source code from https://sqlite.org/
-#### Compiling
+##### Compiling
 Build SQLite3 as a static library, then open the Visual Studio Solution file **`yugioh.sln`**.  
 Add **`sqlite3.c`** to the source files and set the following configuration properties:  
 
@@ -34,6 +35,49 @@ Add **`sqlite3.c`** to the source files and set the following configuration prop
   - **`php\dev`** containing **`php7ts.lib`**
   
 Now set your configuration and platform and build the DLL.
+
+## Overview
+```php
+class yugioh\card
+{
+    public integer $original_id;
+    public array $ids;
+    public string $name;
+    public string $desc;
+    public integer $ot;
+    public integer $setcode;
+    public integer $type;
+    public integer $atk;
+    public integer $def;
+    public integer $level;
+    public integer $race;
+    public integer $attribute;
+    public integer $category;
+}
+
+class yugioh\replay
+{
+    public integer $life_points;
+    public integer $hand_count;
+    public integer $draw_count;
+    public array $players;
+
+    public static function from_file(string $file): yugioh\replay;
+    public function read_file(string $file): void;
+    public function decode(string $data): void;
+}
+
+class yugioh
+{
+    public array $dbs;
+
+    public function db(string $language, string $path): void;
+    public function dbs(array $paths): void;
+    public function db_remove(string $language): void;
+    public function match(string $name, string $inlang, number $count = 1): array;
+    public function search(string $any, string $inlang, string $lang): yugioh\card;
+}
+```
 
 
 #
