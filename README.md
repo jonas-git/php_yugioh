@@ -1,6 +1,11 @@
 # php_yugioh
 Yu-Gi-Oh! PHP extension.
 
+## Cloning
+```
+$ git clone https://github.com/jonas-vanen/php_yugioh.git --recursive
+```
+
 ## Linux
 #### Requirements
 * PHP version `7.*`
