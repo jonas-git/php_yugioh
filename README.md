@@ -83,5 +83,5 @@ class yugioh
 
 
 #
-This repository is licensed under the GNU General Public License.  
+This repository is licensed under the MIT License.  
 ©2017 Jonas Vanen
