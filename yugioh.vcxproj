@@ -88,12 +88,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\php\7.1.8\src;\php\7.1.8\src\main;\php\7.1.8\src\Zend;\php\7.1.8\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>\php\7.0.16\dev</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\php\7.1.8\dev</AdditionalLibraryDirectories>
       <AdditionalDependencies>php7ts.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -104,12 +104,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\php\7.1.8\src;\php\7.1.8\src\main;\php\7.1.8\src\Zend;\php\7.1.8\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>\php\7.0.16\dev</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\php\7.1.8\dev</AdditionalLibraryDirectories>
       <AdditionalDependencies>php7ts.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -122,14 +122,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\php\7.1.8\src;\php\7.1.8\src\main;\php\7.1.8\src\Zend;\php\7.1.8\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>\php\7.0.16\dev</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\php\7.1.8\dev</AdditionalLibraryDirectories>
       <AdditionalDependencies>php7ts.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -142,14 +142,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\php\7.1.8\src;\php\7.1.8\src\main;\php\7.1.8\src\Zend;\php\7.1.8\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>\php\7.0.16\dev</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\php\7.1.8\dev</AdditionalLibraryDirectories>
       <AdditionalDependencies>php7ts.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
