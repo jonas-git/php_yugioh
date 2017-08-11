@@ -66,7 +66,7 @@ void extract_player_name(char **player, const byte **data)
 {
 	const byte *data_byte = *data;
 
-	char *player_name = (char *)calloc(RR_NAME_SIZE, sizeof(char));
+	char *player_name = calloc(RR_NAME_SIZE, sizeof(char));
 	if (!player_name)
 		exit(EXIT_FAILURE);
 
@@ -87,7 +87,7 @@ void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *head
 	int32_t j;
 
 	replay->player_count = size;
-	replay->players = (char **)calloc(size, sizeof(char) * RR_NAME_SIZE);
+	replay->players = calloc(size, sizeof(char) * RR_NAME_SIZE);
 	if (!replay->players)
 		exit(EXIT_FAILURE);
 	for (i = 0; i < size; ++i)
@@ -99,13 +99,13 @@ void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *head
 	replay->draw_count = *data_int32++;
 	++data_int32; // other
 
-	replay->decks = (struct rr_deck_info *)calloc(size, sizeof(struct rr_deck_info));
+	replay->decks = calloc(size, sizeof(struct rr_deck_info));
 	if (!replay->decks) { exit(EXIT_FAILURE); }
 
 	for (i = 0; i < size; ++i) {
 		int32_t main_deck_size = *data_int32++;
 		replay->decks[i].size_main = main_deck_size;
-		replay->decks[i].main_deck = (int32_t *)calloc(main_deck_size, sizeof(int32_t));
+		replay->decks[i].main_deck = calloc(main_deck_size, sizeof(int32_t));
 		if (!replay->decks[i].main_deck)
 			exit(EXIT_FAILURE);
 		for (j = 0; j < main_deck_size; ++j)
@@ -113,7 +113,7 @@ void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *head
 		
 		int32_t extra_deck_size = *data_int32++;
 		replay->decks[i].size_extra = extra_deck_size;
-		replay->decks[i].extra_deck = (int32_t *)calloc(extra_deck_size, sizeof(int32_t));
+		replay->decks[i].extra_deck = calloc(extra_deck_size, sizeof(int32_t));
 		if (!replay->decks[i].extra_deck)
 			exit(EXIT_FAILURE);
 		for (j = 0; j < extra_deck_size; ++j)
@@ -142,7 +142,7 @@ struct rr_replay *rr_read_replay(const char *file)
 struct rr_replay *rr_read_replay_f(FILE *stream)
 {
 	long file_size = fsize(stream);
-	byte *data = (byte *)calloc(file_size, sizeof(byte));
+	byte *data = calloc(file_size, sizeof(byte));
 	if (!data)
 		exit(EXIT_FAILURE);
 
@@ -163,11 +163,11 @@ struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 	const byte *data_byte = (const byte *)data;
 	const byte *current_data_byte = data_byte;
 
-	struct rr_replay *replay = (struct rr_replay *)calloc(1, sizeof(struct rr_replay));
+	struct rr_replay *replay = calloc(1, sizeof(struct rr_replay));
 	if (!replay)
 		exit(EXIT_FAILURE);
 
-	replay->header = (struct rr_replay_header *)calloc(1, sizeof(struct rr_replay_header));
+	replay->header = calloc(1, sizeof(struct rr_replay_header));
 	if (!replay->header)
 		exit(EXIT_FAILURE);
 
@@ -178,7 +178,7 @@ struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 
 	if ((replay->header->flag & 0x1) != 0) { // if compressed
 		const byte *in_data = current_data_byte;
-		byte *out_data = (byte *)calloc(replay->header->data_size, sizeof(byte));
+		byte *out_data = calloc(replay->header->data_size, sizeof(byte));
 		if (!out_data)
 			exit(EXIT_FAILURE);
 

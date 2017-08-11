@@ -158,7 +158,7 @@ PHP_METHOD(yugioh_replay, from_file)
 	if (argc < 1) 
 		RETURN_NULL();
 
-	zval *argv = (zval *)safe_emalloc(sizeof(zval), argc, 0);
+	zval *argv = safe_emalloc(sizeof(zval), argc, 0);
 	zend_get_parameters_array_ex(argc, argv);
 
 	u_call_function(return_value, "read_file", argv, argc);
@@ -544,9 +544,7 @@ static void replay_to_zval(zval **object, struct rr_replay *replay)
 
 static zend_object *yugioh_create_object(zend_class_entry *ce)
 {
-	zend_object *zo;
-	zo = (zend_object *)(
-		ecalloc(1, sizeof(zend_object) + zend_object_properties_size(ce)));
+	zend_object *zo = ecalloc(1, sizeof(zend_object) + zend_object_properties_size(ce));
 
 	zend_object_std_init(zo, ce);
 	object_properties_init(zo, ce);

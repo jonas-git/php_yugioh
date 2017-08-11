@@ -28,7 +28,7 @@ char *u_wcstombs(const wchar_t *src) {
 	}
 	while (*current++ != '\0');
 
-	char *dest = (char *)calloc(size, sizeof(char)), *wcs = dest;
+	char *dest = calloc(size, sizeof(char)), *wcs = dest;
 	if (!dest)
 		exit(EXIT_FAILURE);
 
@@ -82,7 +82,7 @@ wchar_t *u_mbstowcs(const char *src) {
 	int seqlen = 0;
 
 	size_t size = 0llu, i;
-	string *wcs = (string *)calloc(1, sizeof(string));
+	string *wcs = calloc(1, sizeof(string));
 	string *current = wcs;
 
 	while (*ptr != '\0') {
@@ -150,7 +150,7 @@ wchar_t *u_mbstowcs(const char *src) {
 			uc = ((uc << 6) | (ulong)(ptr[i] & 0x3F));
 
 		current->c = uc;
-		current->next = (string *)calloc(1, sizeof(string));
+		current->next = calloc(1, sizeof(string));
 		if (!current->next)
 			exit(EXIT_FAILURE);
 		current = current->next;
@@ -158,7 +158,7 @@ wchar_t *u_mbstowcs(const char *src) {
 		size += 1;
 	}
 
-	wchar_t *dest = (wchar_t *)calloc(size, sizeof(wchar_t));
+	wchar_t *dest = calloc(size, sizeof(wchar_t));
 	if (!dest)
 		exit(EXIT_FAILURE);
 
@@ -181,7 +181,7 @@ wchar_t *u_wcstolower(wchar_t *str) {
 }
 
 wchar_t *u_wcstolower_s(const wchar_t *str, size_t size) {
-	wchar_t *str_lower = (wchar_t *)malloc(size * sizeof(wchar_t));
+	wchar_t *str_lower = malloc(size * sizeof(wchar_t));
 	size_t i;
 	for (i = 0llu; i < size; ++i)
 		str_lower[i] = towlower(str[i]);

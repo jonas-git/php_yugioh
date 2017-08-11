@@ -32,7 +32,7 @@ typedef struct yugioh_id_node yugioh_id_node;
 
 inline yugioh_entry_node *new_entry_node()
 {
-	yugioh_entry_node *mem = (yugioh_entry_node *)calloc(1, sizeof(yugioh_entry_node));
+	yugioh_entry_node *mem = calloc(1, sizeof(yugioh_entry_node));
 	CHECK_ALLOC(mem);
 	mem->data = NULL;
 	mem->next = NULL;
@@ -41,7 +41,7 @@ inline yugioh_entry_node *new_entry_node()
 
 inline yugioh_id_node *new_id_node()
 {
-	yugioh_id_node *mem = (yugioh_id_node *)calloc(1, sizeof(yugioh_id_node));
+	yugioh_id_node *mem = calloc(1, sizeof(yugioh_id_node));
 	CHECK_ALLOC(mem);
 	mem->id = 0u;
 	mem->next = NULL;
@@ -114,7 +114,7 @@ yugioh_entry *yugioh_match(const wchar_t *name, const char *path, size_t *out_si
 		wchar_t *cdb_name = u_mbstowcs(sqlite3_column_text(stmt, 0));
 		wchar_t *cdb_name_lower = u_wcstolower_s(cdb_name, wcslen(cdb_name) + 1);
 
-		current_node->data = (yugioh_entry *)calloc(1, sizeof(yugioh_entry));
+		current_node->data = calloc(1, sizeof(yugioh_entry));
 		CHECK_ALLOC(current_node->data);
 		current_node->data->name = cdb_name;
 		current_node->data->distance = dice_coefficient(name_lower, cdb_name_lower);
@@ -131,7 +131,7 @@ yugioh_entry *yugioh_match(const wchar_t *name, const char *path, size_t *out_si
 
 	if (out_size)
 		*out_size = list_size;
-	yugioh_entry *entries = (yugioh_entry *)calloc(list_size, sizeof(yugioh_entry));
+	yugioh_entry *entries = calloc(list_size, sizeof(yugioh_entry));
 	CHECK_ALLOC(entries);
 	yugioh_entry *current_entry = entries;
 
@@ -158,7 +158,7 @@ yugioh_card *to_card(sqlite3_stmt *stmt)
 	if (sqlite3_step(stmt) ^ SQLITE_ROW)
 		return NULL;
 
-	yugioh_card *card = (yugioh_card *)calloc(1, sizeof(yugioh_card));
+	yugioh_card *card = calloc(1, sizeof(yugioh_card));
 	CHECK_ALLOC(card);
 
 	card->ids = NULL;
@@ -193,7 +193,7 @@ yugioh_card *to_card(sqlite3_stmt *stmt)
 		alias = sqlite3_column_int(stmt, 4);
 	}
 
-	int32_t *ids = (int32_t *)calloc(list_size, sizeof(int32_t));
+	int32_t *ids = calloc(list_size, sizeof(int32_t));
 	CHECK_ALLOC(ids);
 	int32_t *current_id = ids;
 
