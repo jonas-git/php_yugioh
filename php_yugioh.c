@@ -1,5 +1,4 @@
 #include <locale.h>
-#include <sqlite3.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +14,7 @@
 #include "yugioh.h"
 #include "replay_reader.h"
 #include "util.h"
+#include "sqlite3.h"
 
 static zend_class_entry *yugioh_class_entry = NULL;
 static zend_class_entry *yugioh_card_class_entry = NULL;

@@ -1,5 +1,4 @@
 #include <locale.h>
-#include <sqlite3.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +7,7 @@
 #include "yugioh.h"
 #include "dice.h"
 #include "util.h"
+#include "sqlite3.h"
 
 #define CHECK_ALLOC(ptr) if (!ptr) { exit(EXIT_FAILURE); }
 
