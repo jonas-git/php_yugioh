@@ -154,7 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\include\source\sqlite3.c" />
     <ClCompile Include="dice.c" />
     <ClCompile Include="lzma\C\Alloc.c" />
     <ClCompile Include="lzma\C\LzmaDec.c" />
