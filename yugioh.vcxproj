@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src\win32;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -104,7 +104,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src\win32;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,7 +122,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src\win32;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,7 +142,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;YUGIOH_EXPORTS;%(PreprocessorDefinitions);PHP_WIN32;ZEND_WIN32;ZTS=1;ZEND_DEBUG=0;COMPILE_DL_YUGIOH</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src\win32;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\include\include;\php\7.0.16\src;\php\7.0.16\src\main;\php\7.0.16\src\Zend;\php\7.0.16\src\TSRM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
