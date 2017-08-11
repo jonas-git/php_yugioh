@@ -30,7 +30,7 @@ typedef struct yugioh_entry yugioh_entry;
 typedef struct yugioh_entry_node yugioh_entry_node;
 typedef struct yugioh_id_node yugioh_id_node;
 
-inline yugioh_entry_node* new_entry_node()
+inline yugioh_entry_node *new_entry_node()
 {
 	yugioh_entry_node *mem = (yugioh_entry_node *)calloc(1, sizeof(yugioh_entry_node));
 	CHECK_ALLOC(mem);
@@ -39,7 +39,7 @@ inline yugioh_entry_node* new_entry_node()
 	return mem;
 }
 
-inline yugioh_id_node* new_id_node()
+inline yugioh_id_node *new_id_node()
 {
 	yugioh_id_node *mem = (yugioh_id_node *)calloc(1, sizeof(yugioh_id_node));
 	CHECK_ALLOC(mem);
@@ -59,7 +59,7 @@ int sqlite3_check(int err_code, int *out_err, sqlite3 *db, sqlite3_stmt *stmt)
 	return 1;
 }
 
-int sort_predicate(const void* p1, const void* p2)
+int sort_predicate(const void *p1, const void *p2)
 {
 	const yugioh_entry a = *(yugioh_entry *)p1;
 	const yugioh_entry b = *(yugioh_entry *)p2;
@@ -84,7 +84,7 @@ void yugioh_destroy_card(struct yugioh_card *card)
 	free(card);
 }
 
-yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_size, int *out_err)
+yugioh_entry *yugioh_match(const wchar_t *name, const char *path, size_t *out_size, int *out_err)
 {
 	setlocale(LC_ALL, "en_US.UTF-8");
 	wchar_t *name_lower = u_wcstolower_s(name, wcslen(name));
@@ -155,7 +155,7 @@ yugioh_entry* yugioh_match(const wchar_t *name, const char *path, size_t *out_si
 	return entries;
 }
 
-yugioh_card* to_card(sqlite3_stmt *stmt)
+yugioh_card *to_card(sqlite3_stmt *stmt)
 {
 	if (sqlite3_step(stmt) ^ SQLITE_ROW) {
 		return NULL;
@@ -230,7 +230,7 @@ yugioh_card* to_card(sqlite3_stmt *stmt)
 	return card;
 }
 
-yugioh_card* yugioh_search(int32_t id, const char *path, int *out_err)
+yugioh_card *yugioh_search(int32_t id, const char *path, int *out_err)
 {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
@@ -254,7 +254,7 @@ yugioh_card* yugioh_search(int32_t id, const char *path, int *out_err)
 	return card;
 }
 
-struct yugioh_card* yugioh_search_n(const wchar_t *name, const char *in_path, const char *path, int *out_err)
+struct yugioh_card *yugioh_search_n(const wchar_t *name, const char *in_path, const char *path, int *out_err)
 {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;

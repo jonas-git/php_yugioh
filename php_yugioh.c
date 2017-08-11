@@ -542,7 +542,7 @@ static void replay_to_zval(zval **object, struct rr_replay *replay)
 	}
 }
 
-static zend_object* yugioh_create_object(zend_class_entry *ce)
+static zend_object *yugioh_create_object(zend_class_entry *ce)
 {
 	zend_object *zo;
 	zo = (zend_object *)(

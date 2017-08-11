@@ -8,7 +8,7 @@
 #include "php.h"
 #include "util.h"
 
-char* u_wcstombs(const wchar_t *src) {
+char *u_wcstombs(const wchar_t *src) {
 	size_t size = 0;
 	const wchar_t *current = src;
 	
@@ -71,7 +71,7 @@ char* u_wcstombs(const wchar_t *src) {
 	return dest;
 }
 
-wchar_t* u_mbstowcs(const char *src) {
+wchar_t *u_mbstowcs(const char *src) {
 #define IS_IN_RANGE(c, f, l) (((c) >= (f)) && ((c) <= (l)))
 #define RETURN_IF(b) if (b) { free(wcs); return NULL; }
 
@@ -187,7 +187,7 @@ wchar_t* u_mbstowcs(const char *src) {
 	return dest;
 }
 
-wchar_t* u_wcstolower(wchar_t *str) {
+wchar_t *u_wcstolower(wchar_t *str) {
 	wchar_t *current = str;
 	while (*current++ != '\0') {
 		*current = towlower(*current);
@@ -195,7 +195,7 @@ wchar_t* u_wcstolower(wchar_t *str) {
 	return str;
 }
 
-wchar_t* u_wcstolower_s(const wchar_t *str, size_t size) {
+wchar_t *u_wcstolower_s(const wchar_t *str, size_t size) {
 	wchar_t *str_lower = (wchar_t *)malloc(size * sizeof(wchar_t));
 	size_t i;
 	for (i = 0llu; i < size; ++i) {

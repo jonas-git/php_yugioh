@@ -124,7 +124,7 @@ void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *head
 	*data = (const byte *)data_int32;
 }
 
-struct rr_replay* rr_read_replay(const char *file)
+struct rr_replay *rr_read_replay(const char *file)
 {
 	FILE *stream = NULL;
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -139,7 +139,7 @@ struct rr_replay* rr_read_replay(const char *file)
 	return replay;
 }
 
-struct rr_replay* rr_read_replay_f(FILE *stream)
+struct rr_replay *rr_read_replay_f(FILE *stream)
 {
 	long file_size = fsize(stream);
 	byte *data = (byte *)calloc(file_size, sizeof(byte));
@@ -157,7 +157,7 @@ struct rr_replay* rr_read_replay_f(FILE *stream)
 	return replay;
 }
 
-struct rr_replay* rr_read_replay_a(const void *data, size_t size)
+struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 {
 	const byte *data_byte = (const byte *)data;
 	const byte *current_data_byte = data_byte;

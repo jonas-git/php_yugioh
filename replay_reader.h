@@ -35,9 +35,9 @@ struct rr_replay
 	int32_t draw_count;
 };
 
-struct rr_replay* rr_read_replay(const char *file);
-struct rr_replay* rr_read_replay_f(FILE *stream);
-struct rr_replay* rr_read_replay_a(const void *data, size_t size);
+struct rr_replay *rr_read_replay(const char *file);
+struct rr_replay *rr_read_replay_f(FILE *stream);
+struct rr_replay *rr_read_replay_a(const void *data, size_t size);
 void rr_destroy_replay(struct rr_replay *replay);
 
 #endif // !REPLAY_READER_H
