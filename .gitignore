@@ -3,3 +3,5 @@ yugioh.VC.db
 yugioh.VC.VC.opendb
 x64
 x86
+sqlite3.h
+sqlite3.lib
