@@ -167,7 +167,7 @@ PHP_METHOD(yugioh_replay, from_file)
 	ZVAL_STRINGL(&argv, file, file_len);
 
 	ZVAL_LSTRING(&func_name, "read_file");
-	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, argc, &argv);
+	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 1, &argv);
 }
 // }}}
 
