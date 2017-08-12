@@ -52,7 +52,7 @@ ZEND_GET_MODULE(yugioh)
 
 // Argument information
 // {{{
-ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay___construct, 0, 0, 0)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay___construct, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_from_file, 0, 0, 1)
@@ -130,12 +130,16 @@ static const zend_function_entry yugioh_class_method_entry[] = {
 };
 // }}}
 
-// public function yugioh\replay::__construct(void) : void
+// public function yugioh\replay::__construct(string $file) : void
 // {{{
 PHP_METHOD(yugioh_replay, __construct)
 {
-	if (zend_parse_parameters_none() == FAILURE)
-		return;
+	char *file = NULL;
+	size_t file_len;
+
+	int argc = ZEND_NUM_ARGS();
+	if (zend_parse_parameters(argc, "s", STR_ARG(file)) == FAILURE)
+		RETURN_NULL();
 
 	zval *self = getThis();
 	HashTable *players = zend_hash_create(0);
@@ -143,6 +147,12 @@ PHP_METHOD(yugioh_replay, __construct)
 	zval players_zv;
 	ZVAL_ARR(&players_zv, players);
 	zend_update_property(yugioh_replay_class_entry, self, "players", sizeof("players") - 1, &players_zv);
+
+	zval func_name, rv, argv;
+	ZVAL_STRINGL(&argv, file, file_len);
+
+	ZVAL_LSTRING(&func_name, "read_file");
+	call_user_function(&Z_CE_P(self)->function_table, self, &func_name, &rv, 1, &argv);
 }
 // }}}
 
