@@ -7,7 +7,6 @@
 #include "lzma/C/Alloc.h"
 #include "lzma/C/LzmaDec.h"
 #include "replay_reader.h"
-#include "util.h"
 
 #define RR_NAME_SIZE 40 / 2
 
