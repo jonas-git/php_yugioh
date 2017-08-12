@@ -159,12 +159,11 @@ PHP_METHOD(yugioh_replay, from_file)
 
 	object_init_ex(return_value, yugioh_replay_class_entry);
 
-	zval func_name, rv;
+	zval func_name, rv, argv;
+	ZVAL_STRINGL(&argv, file, file_len);
+
 	ZVAL_LSTRING(&func_name, "__construct");
 	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 0, NULL);
-
-	zval argv;
-	ZVAL_STRINGL(&argv, file, file_len);
 
 	ZVAL_LSTRING(&func_name, "read_file");
 	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 1, &argv);
