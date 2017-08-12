@@ -166,7 +166,7 @@ PHP_METHOD(yugioh_replay, from_file)
 	if (argc < 1) 
 		RETURN_NULL();
 
-	zval *argv = safe_emalloc(sizeof(zval), argc, 0);
+	zval *argv = emalloc(sizeof(zval), argc, 0);
 	zend_get_parameters_array_ex(argc, argv);
 
 	ZVAL_LSTRING(&func_name, "read_file");
