@@ -394,8 +394,8 @@ PHP_METHOD(yugioh, search)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "sss", STR_ARG(name), STR_ARG(inlang), STR_ARG(lang)) == FAILURE)
 		RETURN_NULL();
 
-	zval *self = getThis(), *rv;
-	zval *databases_zv = zend_read_property(yugioh_class_entry, self, "dbs", sizeof("dbs") - 1, 0, rv);
+	zval rv;
+	zval *databases_zv = zend_read_property(yugioh_class_entry, getThis(), "dbs", sizeof("dbs") - 1, 0, &rv);
 	HashTable *databases = Z_ARR_P(databases_zv);
 
 	zval lang_z;
