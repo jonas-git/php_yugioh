@@ -1,10 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-// Shorthand for zend_parse_parameters().
-#define STR_ARG(str) &str, &str##_len
-#define RETURN_EMPTY_ARR() RETURN_ARR(u_create_table(0))
-
 #include <stdint.h>
 #include "php.h"
 
