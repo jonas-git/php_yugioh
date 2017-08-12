@@ -6,6 +6,7 @@
 #include <wctype.h>
 
 #include "php.h"
+#include "ext/standard/info.h"
 #include "php_yugioh.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -516,14 +517,14 @@ static void replay_to_zval(zval **object, struct rr_replay *replay)
 			continue;
 		}
 
-		HashTable *main_deck_ht = u_create_table(deck.size_main);
+		HashTable *main_deck_ht = u_create_table((uint32_t)deck.size_main);
 		for (j = 0; j < deck.size_main; ++j) {
 			zval card_zv;
 			ZVAL_LONG(&card_zv, deck.main_deck[j]);
 			zend_hash_next_index_insert(main_deck_ht, &card_zv);
 		}
 
-		HashTable *extra_deck_ht = u_create_table(deck.size_extra);
+		HashTable *extra_deck_ht = u_create_table((uint32_t)deck.size_extra);
 		for (j = 0; j < deck.size_extra; ++j) {
 			zval card_zv;
 			ZVAL_LONG(&card_zv, deck.extra_deck[j]);
