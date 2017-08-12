@@ -35,7 +35,7 @@ char *u_wcstombs(const wchar_t *src) {
 	do {
 		wchar_t c = *src;
 		if (c < 0x80)
-			*wcs++ = c;
+			*wcs++ = (char)c;
 		else if (c < 0x800) {
 			*wcs++ = 192 + c / (64);
 			*wcs++ = 128 + c % 64;
@@ -149,7 +149,7 @@ wchar_t *u_mbstowcs(const char *src) {
 		for (i = 1llu; i < seqlen; ++i)
 			uc = ((uc << 6) | (ulong)(ptr[i] & 0x3F));
 
-		current->c = uc;
+		current->c = (wchar_t)uc;
 		current->next = calloc(1, sizeof(string));
 		if (!current->next)
 			exit(EXIT_FAILURE);
