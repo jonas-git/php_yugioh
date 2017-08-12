@@ -163,9 +163,6 @@ PHP_METHOD(yugioh_replay, from_file)
 	ZVAL_LSTRING(&func_name, "__construct");
 	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 0, NULL);
 
-	if (argc < 1) 
-		RETURN_NULL();
-
 	zval argv;
 	ZVAL_STRINGL(&argv, file, file_len);
 
