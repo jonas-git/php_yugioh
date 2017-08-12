@@ -5,6 +5,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#define PHP_COMPILER_ID "VC14"
 #include "php.h"
 #include "ext/standard/info.h"
 #include "php_yugioh.h"
