@@ -4,6 +4,17 @@
 #define PHP_YUGIOH_VERSION "1.0.0"
 #define PHP_YUGIOH_EXTNAME "yugioh"
 
+/* macros for creating a ZVAL from a string literal
+	without a call to strlen(), like in ZVAL_STRING().  */
+#define ZVAL_LSTRING(z, s) do { \
+		const char *_s = (s); \
+		ZVAL_STRINGL(z, _s, sizeof(s) - 1); \
+	} while (0)
+#define ZVAL_PLSTRING(z, s) do { \
+		const char *_s = (s); \
+		ZVAL_PSTRINGL(z, _s, sizeof(s) - 1); \
+	} while (0)
+
 PHP_METHOD(yugioh_replay, __construct);
 PHP_METHOD(yugioh_replay, from_file);
 PHP_METHOD(yugioh_replay, read_file);
