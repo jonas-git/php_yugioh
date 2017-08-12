@@ -159,9 +159,9 @@ PHP_METHOD(yugioh_replay, from_file)
 
 	object_init_ex(return_value, yugioh_replay_class_entry);
 
-	zval function_name;
-	ZVAL_STRING(&function_name, "__construct");
-	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &function_name, NULL, 0, NULL);
+	zval func_name, rv;
+	ZVAL_STRING(&func_name, "__construct");
+	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 0, NULL);
 
 	if (argc < 1) 
 		RETURN_NULL();
@@ -169,8 +169,8 @@ PHP_METHOD(yugioh_replay, from_file)
 	zval *argv = safe_emalloc(sizeof(zval), argc, 0);
 	zend_get_parameters_array_ex(argc, argv);
 
-	ZVAL_STRING(&function_name, "read_file");
-	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &function_name, NULL, argc, argv);
+	ZVAL_STRING(&func_name, "read_file");
+	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, argc, argv);
 
 	efree(argv);
 }
