@@ -202,14 +202,6 @@ int u_is_number(const char *str, int *out)
 	return 1;
 }
 
-zval u_call_function(zval *object, const char *name, zval *params, uint32_t param_count)
-{
-	zval function_name, return_value;
-	ZVAL_STRING(&function_name, name);
-	call_user_function(&Z_CE_P(object)->function_table, object, &function_name, &return_value, param_count, params);
-	return return_value;
-}
-
 HashTable *u_create_table(uint32_t size)
 {
 	HashTable *ht;
