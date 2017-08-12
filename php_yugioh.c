@@ -14,6 +14,7 @@
 #include "yugioh.h"
 #include "replay_reader.h"
 #include "sqlite3.h"
+#include "util.h"
 
 #define STR_ARG(str) &str, &str##_len
 #define RETURN_EMPTY_ARR() RETURN_ARR(u_create_table(0))
