@@ -182,7 +182,7 @@ PHP_METHOD(yugioh_replay, read_file)
 
 	char file_path[MAXPATHLEN];
 	VCWD_REALPATH(file, file_path);
-	if (file_path[0] == 0 || !file_path) {
+	if (!file_path[0]) {
 		php_error_docref(NULL, E_ERROR, "file does not exit");
 		return;
 	}
