@@ -19,7 +19,7 @@
 #include "util.h"
 
 #define STR_ARG(str) &str, &str##_len
-#define RETURN_EMPTY_ARR() RETURN_ARR(u_create_table(0))
+#define RETURN_EMPTY_ARR() RETURN_ARR(zend_hash_create(0))
 
 static zend_class_entry *yugioh_class_entry = NULL;
 static zend_class_entry *yugioh_card_class_entry = NULL;
@@ -138,7 +138,7 @@ PHP_METHOD(yugioh_replay, __construct)
 		return;
 
 	zval *self = getThis();
-	HashTable *players = u_create_table(0);
+	HashTable *players = zend_hash_create(0);
 
 	zval players_zv;
 	ZVAL_ARR(&players_zv, players);
@@ -224,7 +224,7 @@ PHP_METHOD(yugioh_card, __construct)
 		return;
 
 	zval *self = getThis();
-	HashTable *ids = u_create_table(0);
+	HashTable *ids = zend_hash_create(0);
 
 	zval ids_zv;
 	ZVAL_ARR(&ids_zv, ids);
@@ -240,7 +240,7 @@ PHP_METHOD(yugioh, __construct)
 		return;
 
 	zval *self = getThis();
-	HashTable *databases = u_create_table(0);
+	HashTable *databases = zend_hash_create(0);
 
 	zval databases_zv;
 	ZVAL_ARR(&databases_zv, databases);
@@ -355,12 +355,12 @@ PHP_METHOD(yugioh, match)
 	if (!entries)
 		RETURN_EMPTY_ARR();
 
-	HashTable *result = u_create_table(count < 0 ? 0 : count);
+	HashTable *result = zend_hash_create(count < 0 ? 0 : count);
 	size_t i;
 	for (i = 0llu; i < count && i < size; ++i) {
 		struct yugioh_entry entry = entries[i];
 
-		HashTable *entry_ht = u_create_table(3);
+		HashTable *entry_ht = zend_hash_create(3);
 		char *entry_name = u_wcstombs(entry.name);
 
 		zval name_zv, distance_zv, contains_zv;
@@ -434,7 +434,7 @@ PHP_METHOD(yugioh, search)
 		RETURN_NULL();
 
 	object_init_ex(return_value, yugioh_card_class_entry);
-	HashTable *ids = u_create_table(8);
+	HashTable *ids = zend_hash_create(8);
 	
 	size_t i;
 	for (i = 0; i < card->ids_size; ++i) {
@@ -516,21 +516,21 @@ static void replay_to_zval(zval **object, struct rr_replay *replay)
 			continue;
 		}
 
-		HashTable *main_deck_ht = u_create_table((uint32_t)deck.size_main);
+		HashTable *main_deck_ht = zend_hash_create((uint32_t)deck.size_main);
 		for (j = 0; j < deck.size_main; ++j) {
 			zval card_zv;
 			ZVAL_LONG(&card_zv, deck.main_deck[j]);
 			zend_hash_next_index_insert(main_deck_ht, &card_zv);
 		}
 
-		HashTable *extra_deck_ht = u_create_table((uint32_t)deck.size_extra);
+		HashTable *extra_deck_ht = zend_hash_create((uint32_t)deck.size_extra);
 		for (j = 0; j < deck.size_extra; ++j) {
 			zval card_zv;
 			ZVAL_LONG(&card_zv, deck.extra_deck[j]);
 			zend_hash_next_index_insert(extra_deck_ht, &card_zv);
 		}
 
-		HashTable *deck_ht = u_create_table(2);
+		HashTable *deck_ht = zend_hash_create(2);
 		zval player_zv, main_deck_zv, extra_deck_zv;
 		ZVAL_STRING(&player_zv, player);
 		ZVAL_ARR(&main_deck_zv, main_deck_ht);

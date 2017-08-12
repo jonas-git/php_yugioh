@@ -17,7 +17,4 @@ wchar_t* u_wcstolower_s(const wchar_t *str, size_t size); // Allocates a new str
 // A non-zero return value indicates that the out value was set.
 int u_is_number(const char *str, int *out);
 
-// Allocates a hash table of a specific size.
-HashTable *u_create_table(uint32_t size);
-
 #endif // !UTIL_H

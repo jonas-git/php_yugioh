@@ -201,11 +201,3 @@ int u_is_number(const char *str, int *out)
 	*out = number;
 	return 1;
 }
-
-HashTable *u_create_table(uint32_t size)
-{
-	HashTable *ht;
-	ALLOC_HASHTABLE(ht);
-	zend_hash_init(ht, size, NULL, ZVAL_PTR_DTOR, 0);
-	return ht;
-}

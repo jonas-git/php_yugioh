@@ -15,6 +15,15 @@
 		ZVAL_PSTRINGL(z, _s, sizeof(s) - 1); \
 	} while (0)
 
+static inline
+HashTable *zend_hash_create(uint32_t size)
+{
+	HashTable *ht;
+	ALLOC_HASHTABLE(ht);
+	zend_hash_init(ht, size, NULL, ZVAL_PTR_DTOR, 0);
+	return ht;
+}
+
 PHP_METHOD(yugioh_replay, __construct);
 PHP_METHOD(yugioh_replay, from_file);
 PHP_METHOD(yugioh_replay, read_file);
