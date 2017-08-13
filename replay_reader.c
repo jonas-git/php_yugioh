@@ -10,8 +10,6 @@
 
 #define RR_NAME_SIZE 40 / 2
 
-typedef unsigned char byte;
-
 long fsize(FILE *stream)
 {
 	long pos = ftell(stream);
@@ -40,10 +38,10 @@ void rr_destroy_replay(struct rr_replay *replay)
 	free(replay);
 }
 
-void extract_replay_header(struct rr_replay_header *header, const byte **data)
+void extract_replay_header(struct rr_replay_header *header, const unsigned char **data)
 {
 	uint32_t *data_uint32;
-	byte *data_byte;
+	unsigned char *data_byte;
 
 	data_uint32 = (uint32_t *)*data;
 	header->id = *data_uint32++;
@@ -52,7 +50,7 @@ void extract_replay_header(struct rr_replay_header *header, const byte **data)
 	header->seed = *data_uint32++;
 	header->data_size = *data_uint32++;
 	header->hash = *data_uint32++;
-	data_byte = (byte *)data_uint32;
+	data_byte = (unsigned char *)data_uint32;
 
 	char i;
 	for (i = 0; i < RR_HEADER_PROPS_SIZE; ++i)
@@ -61,9 +59,9 @@ void extract_replay_header(struct rr_replay_header *header, const byte **data)
 	*data = data_byte;
 }
 
-void extract_player_name(char **player, const byte **data)
+void extract_player_name(char **player, const unsigned char **data)
 {
-	const byte *data_byte = *data;
+	const unsigned char *data_byte = *data;
 
 	char *player_name = calloc(RR_NAME_SIZE, sizeof(char));
 	if (!player_name)
@@ -79,7 +77,7 @@ void extract_player_name(char **player, const byte **data)
 	*data = data_byte;
 }
 
-void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *header, const byte **data)
+void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *header, const unsigned char **data)
 {
 	bool is_tag = (header->flag & 0x2) != 0;
 	size_t i, size = is_tag ? 4 : 2;
@@ -119,7 +117,7 @@ void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *head
 			replay->decks[i].extra_deck[j] = *data_int32++;
 	}
 
-	*data = (const byte *)data_int32;
+	*data = (const unsigned char *)data_int32;
 }
 
 struct rr_replay *rr_read_replay(const char *file)
@@ -141,11 +139,11 @@ struct rr_replay *rr_read_replay(const char *file)
 struct rr_replay *rr_read_replay_f(FILE *stream)
 {
 	long file_size = fsize(stream);
-	byte *data = calloc(file_size, sizeof(byte));
+	unsigned char *data = calloc(file_size, sizeof(unsigned char));
 	if (!data)
 		exit(EXIT_FAILURE);
 
-	size_t size = fread(data, sizeof(byte), file_size, stream);
+	size_t size = fread(data, sizeof(unsigned char), file_size, stream);
 	if (!data || size == 0) {
 		free(data);
 		return NULL;
@@ -159,8 +157,8 @@ struct rr_replay *rr_read_replay_f(FILE *stream)
 
 struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 {
-	const byte *data_byte = (const byte *)data;
-	const byte *current_data_byte = data_byte;
+	const unsigned char *data_byte = (const unsigned char *)data;
+	const unsigned char *current_data_byte = data_byte;
 
 	struct rr_replay *replay = calloc(1, sizeof(struct rr_replay));
 	if (!replay)
@@ -176,8 +174,8 @@ struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 	size_t compressed_size = size - header_size;
 
 	if ((replay->header->flag & 0x1) != 0) { // if compressed
-		const byte *in_data = current_data_byte;
-		byte *out_data = calloc(replay->header->data_size, sizeof(byte));
+		const unsigned char *in_data = current_data_byte;
+		unsigned char *out_data = calloc(replay->header->data_size, sizeof(unsigned char));
 		if (!out_data)
 			exit(EXIT_FAILURE);
 
@@ -192,7 +190,7 @@ struct rr_replay *rr_read_replay_a(const void *data, size_t size)
 			return NULL;
 		}
 
-		const byte *current_out_data = out_data;
+		const unsigned char *current_out_data = out_data;
 		extract_replay_data(replay, replay->header, &current_out_data);
 		free(out_data);
 	}
