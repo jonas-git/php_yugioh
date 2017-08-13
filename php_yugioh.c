@@ -186,7 +186,6 @@ PHP_METHOD(yugioh_replay, from_data)
 }
 // }}}
 
-
 // public function yugioh\replay::read_file(string $file) : void
 // {{{
 PHP_METHOD(yugioh_replay, read_file)
@@ -245,6 +244,7 @@ PHP_METHOD(yugioh_replay, read_data)
 	ZVAL_BOOL(&is_valid_zv, 1);
 	zend_update_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, &is_valid_zv);
 }
+// }}}
 
 // public function yugioh\replay::is_valid() : bool
 // {{{
