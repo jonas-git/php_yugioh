@@ -10,7 +10,7 @@
 
 #define RR_NAME_SIZE 40 / 2
 
-long fsize(FILE *stream)
+static long fsize(FILE *stream)
 {
 	long pos = ftell(stream);
 	fseek(stream, 0, SEEK_END);
@@ -38,7 +38,7 @@ void rr_destroy_replay(struct rr_replay *replay)
 	free(replay);
 }
 
-void extract_replay_header(struct rr_replay_header *header, const unsigned char **data)
+static void extract_replay_header(struct rr_replay_header *header, const unsigned char **data)
 {
 	uint32_t *data_uint32;
 	unsigned char *data_byte;
@@ -59,7 +59,7 @@ void extract_replay_header(struct rr_replay_header *header, const unsigned char 
 	*data = data_byte;
 }
 
-void extract_player_name(char **player, const unsigned char **data)
+static void extract_player_name(char **player, const unsigned char **data)
 {
 	const unsigned char *data_byte = *data;
 
@@ -77,7 +77,7 @@ void extract_player_name(char **player, const unsigned char **data)
 	*data = data_byte;
 }
 
-void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *header, const unsigned char **data)
+static void extract_replay_data(struct rr_replay *replay, struct rr_replay_header *header, const unsigned char **data)
 {
 	bool is_tag = (header->flag & 0x2) != 0;
 	size_t i, size = is_tag ? 4 : 2;
