@@ -131,10 +131,10 @@ static const zend_function_entry yugioh_class_method_entry[] = {
 PHP_METHOD(yugioh_replay, __construct)
 {
 	char *file = NULL;
-	size_t file_len;
+	size_t file_len = 0;
 
 	int argc = ZEND_NUM_ARGS();
-	if (zend_parse_parameters(argc, "s", STR_ARG(file)) == FAILURE)
+	if (zend_parse_parameters(argc, "|s", STR_ARG(file)) == FAILURE)
 		RETURN_NULL();
 
 	zval *self = getThis();
@@ -144,11 +144,13 @@ PHP_METHOD(yugioh_replay, __construct)
 	ZVAL_ARR(&players_zv, players);
 	zend_update_property(yugioh_replay_class_entry, self, "players", sizeof("players") - 1, &players_zv);
 
-	zval func_name, rv, argv;
-	ZVAL_STRINGL(&argv, file, file_len);
+	if (file) {
+		zval func_name, rv, argv;
+		ZVAL_STRINGL(&argv, file, file_len);
 
-	ZVAL_LSTRING(&func_name, "read_file");
-	call_user_function(&Z_CE_P(self)->function_table, self, &func_name, &rv, 1, &argv);
+		ZVAL_LSTRING(&func_name, "read_file");
+		call_user_function(&Z_CE_P(self)->function_table, self, &func_name, &rv, 1, &argv);
+	}
 }
 // }}}
 
