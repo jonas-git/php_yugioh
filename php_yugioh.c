@@ -301,8 +301,8 @@ PHP_METHOD(yugioh, db)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss", STR_ARG(lang), STR_ARG(path)) == FAILURE)
 		return;
 
-	zval *self = getThis(), *rv = NULL;
-	zval *databases_zv = zend_read_property(yugioh_class_entry, self, "dbs", sizeof("dbs") - 1, 0, rv);
+	zval rv, *self = getThis();
+	zval *databases_zv = zend_read_property(yugioh_class_entry, self, "dbs", sizeof("dbs") - 1, 0, &rv);
 	HashTable *databases = Z_ARR_P(databases_zv);
 
 	zval path_zv;
