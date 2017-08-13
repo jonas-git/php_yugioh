@@ -187,7 +187,7 @@ PHP_METHOD(yugioh_replay, from_data)
 // {{{
 PHP_METHOD(yugioh_replay, read_file)
 {
-	char *file = NULL;
+	char *file;
 	size_t file_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(file)) == FAILURE)
@@ -214,7 +214,7 @@ PHP_METHOD(yugioh_replay, read_file)
 // {{{
 PHP_METHOD(yugioh_replay, read_data)
 {
-	unsigned char *data = NULL;
+	unsigned char *data;
 	size_t data_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(data)) == FAILURE)
@@ -265,7 +265,7 @@ PHP_METHOD(yugioh, __construct)
 // {{{
 PHP_METHOD(yugioh, db)
 {
-	char *lang = NULL, *path = NULL;
+	char *lang, *path;
 	size_t lang_len, path_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "ss", STR_ARG(lang), STR_ARG(path)) == FAILURE)
@@ -285,7 +285,7 @@ PHP_METHOD(yugioh, db)
 // {{{
 PHP_METHOD(yugioh, dbs)
 {
-	HashTable *paths_ht = NULL;
+	HashTable *paths_ht;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "H", &paths_ht) == FAILURE)
 		return;
@@ -314,7 +314,7 @@ PHP_METHOD(yugioh, dbs)
 // {{{
 PHP_METHOD(yugioh, db_remove)
 {
-	char *lang = NULL;
+	char *lang;
 	size_t lang_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(lang)) == FAILURE)
@@ -335,7 +335,7 @@ PHP_METHOD(yugioh, db_remove)
 // {{{
 PHP_METHOD(yugioh, match)
 {
-	char *name = NULL, *lang = NULL;
+	char *name, *lang;
 	size_t name_len, lang_len;
 	long count = 1l;
 
