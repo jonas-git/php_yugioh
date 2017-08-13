@@ -21,9 +21,9 @@
 #define STR_ARG(str) &str, &str##_len
 #define RETURN_EMPTY_ARR() RETURN_ARR(zend_hash_create(0))
 
-static zend_class_entry *yugioh_class_entry = NULL;
-static zend_class_entry *yugioh_card_class_entry = NULL;
-static zend_class_entry *yugioh_replay_class_entry = NULL;
+static zend_class_entry *yugioh_class_entry;
+static zend_class_entry *yugioh_card_class_entry;
+static zend_class_entry *yugioh_replay_class_entry;
 static zend_object_handlers yugioh_object_handlers;
 
 static void replay_to_zval(zval **object, struct rr_replay *replay);
