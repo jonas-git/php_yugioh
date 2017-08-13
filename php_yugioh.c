@@ -195,7 +195,7 @@ PHP_METHOD(yugioh_replay, read_file)
 
 	char file_path[MAXPATHLEN];
 	if (!VCWD_REALPATH(file, file_path)) {
-		php_error_docref(NULL, E_ERROR, "file does not exit");
+		php_error_docref(NULL, E_ERROR, "failed to read replay file: No such file");
 		return;
 	}
 
