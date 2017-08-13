@@ -59,7 +59,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_read_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, file)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_decode, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_read_data, 0, 0, 1)
 	ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
@@ -99,7 +99,7 @@ ZEND_END_ARG_INFO()
 static const zend_function_entry yugioh_replay_class_method_entry[] = {
 	PHP_ME(yugioh_replay, __construct, arginfo_yugioh_replay___construct, ZEND_ACC_PUBLIC)
 	PHP_ME(yugioh_replay, read_file, arginfo_yugioh_replay_read_file, ZEND_ACC_PUBLIC)
-	PHP_ME(yugioh_replay, decode, arginfo_yugioh_replay_decode, ZEND_ACC_PUBLIC)
+	PHP_ME(yugioh_replay, read_data, arginfo_yugioh_replay_read_data, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 // }}}
@@ -178,9 +178,9 @@ PHP_METHOD(yugioh_replay, read_file)
 }
 // }}}
 
-// public function yugioh\replay::decode(string $data) : void
+// public function yugioh\replay::read_data(string $data) : void
 // {{{
-PHP_METHOD(yugioh_replay, decode)
+PHP_METHOD(yugioh_replay, read_data)
 {
 	unsigned char *data = NULL;
 	size_t data_len;
