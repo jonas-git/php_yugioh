@@ -25,6 +25,7 @@ HashTable *zend_hash_create(uint32_t size)
 }
 
 PHP_METHOD(yugioh_replay, __construct);
+PHP_METHOD(yugioh_replay, from_data);
 PHP_METHOD(yugioh_replay, read_file);
 PHP_METHOD(yugioh_replay, read_data);
 
