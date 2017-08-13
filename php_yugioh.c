@@ -55,10 +55,6 @@ ZEND_GET_MODULE(yugioh)
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay___construct, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_from_file, 0, 0, 1)
-	ZEND_ARG_INFO(0, file)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_read_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, file)
 ZEND_END_ARG_INFO()
@@ -102,7 +98,6 @@ ZEND_END_ARG_INFO()
 // {{{
 static const zend_function_entry yugioh_replay_class_method_entry[] = {
 	PHP_ME(yugioh_replay, __construct, arginfo_yugioh_replay___construct, ZEND_ACC_PUBLIC)
-	PHP_ME(yugioh_replay, from_file, arginfo_yugioh_replay_from_file, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(yugioh_replay, read_file, arginfo_yugioh_replay_read_file, ZEND_ACC_PUBLIC)
 	PHP_ME(yugioh_replay, decode, arginfo_yugioh_replay_decode, ZEND_ACC_PUBLIC)
 	PHP_FE_END
@@ -153,30 +148,6 @@ PHP_METHOD(yugioh_replay, __construct)
 
 	ZVAL_LSTRING(&func_name, "read_file");
 	call_user_function(&Z_CE_P(self)->function_table, self, &func_name, &rv, 1, &argv);
-}
-// }}}
-
-// public static function yugioh\replay::from_file(string $file) : yugioh\replay
-// {{{
-PHP_METHOD(yugioh_replay, from_file)
-{
-	char *file = NULL;
-	size_t file_len;
-
-	int argc = ZEND_NUM_ARGS();
-	if (zend_parse_parameters(argc, "s", STR_ARG(file)) == FAILURE)
-		RETURN_NULL();
-
-	object_init_ex(return_value, yugioh_replay_class_entry);
-
-	zval func_name, rv, argv;
-	ZVAL_STRINGL(&argv, file, file_len);
-
-	ZVAL_LSTRING(&func_name, "__construct");
-	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 0, NULL);
-
-	ZVAL_LSTRING(&func_name, "read_file");
-	call_user_function(&Z_CE_P(return_value)->function_table, return_value, &func_name, &rv, 1, &argv);
 }
 // }}}
 
