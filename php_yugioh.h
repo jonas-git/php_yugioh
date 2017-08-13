@@ -28,6 +28,7 @@ PHP_METHOD(yugioh_replay, __construct);
 PHP_METHOD(yugioh_replay, from_data);
 PHP_METHOD(yugioh_replay, read_file);
 PHP_METHOD(yugioh_replay, read_data);
+PHP_METHOD(yugioh_replay, is_valid);
 
 PHP_METHOD(yugioh_card, __construct);
 

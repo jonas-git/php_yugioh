@@ -68,6 +68,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_read_data, 0, 0, 1)
 	ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_replay_is_valid, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_yugioh_card___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -106,6 +109,7 @@ static const zend_function_entry yugioh_replay_class_method_entry[] = {
 	PHP_ME(yugioh_replay, from_data, arginfo_yugioh_replay_from_data, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 	PHP_ME(yugioh_replay, read_file, arginfo_yugioh_replay_read_file, ZEND_ACC_PUBLIC)
 	PHP_ME(yugioh_replay, read_data, arginfo_yugioh_replay_read_data, ZEND_ACC_PUBLIC)
+	PHP_ME(yugioh_replay, is_valid, arginfo_yugioh_replay_is_valid, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 // }}}
@@ -199,13 +203,20 @@ PHP_METHOD(yugioh_replay, read_file)
 		return;
 	}
 
+	zval is_valid_zv, *self = getThis();
 	struct rr_replay *replay = rr_read_replay(file_path);
-	if (!replay)
-		return;
 
-	zval *self = getThis();
+	if (!replay) {
+		ZVAL_BOOL(&is_valid_zv, 0);
+		zend_update_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, &is_valid_zv);
+		return;
+	}
+
 	replay_to_zval(&self, replay);
 	rr_destroy_replay(replay);
+
+	ZVAL_BOOL(&is_valid_zv, 1);
+	zend_update_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, &is_valid_zv);
 }
 // }}}
 
@@ -219,14 +230,34 @@ PHP_METHOD(yugioh_replay, read_data)
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", STR_ARG(data)) == FAILURE)
 		return;
 
+	zval is_valid_zv, *self = getThis();
 	struct rr_replay *replay = rr_read_replay_a(data, data_len);
-	if (!replay)
-		return;
 
-	zval *self = getThis();
+	if (!replay) {
+		ZVAL_BOOL(&is_valid_zv, 0);
+		zend_update_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, &is_valid_zv);
+		return;
+	}
+
 	replay_to_zval(&self, replay);
 	rr_destroy_replay(replay);
+
+	ZVAL_BOOL(&is_valid_zv, 1);
+	zend_update_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, &is_valid_zv);
 }
+
+// public function yugioh\replay::is_valid() : bool
+// {{{
+PHP_METHOD(yugioh_replay, is_valid)
+{
+	if (zend_parse_parameters_none() == FAILURE)
+		RETURN_BOOL(0);
+
+	zval rv, *self = getThis();
+	zval *is_valid_zv = zend_read_property(yugioh_replay_class_entry, self, "is_valid", sizeof("is_valid") - 1, 0, &rv);
+	RETURN_BOOL(Z_LVAL_P(is_valid_zv));
+}
+// }}}
 
 // public function yugioh\card::__construct(void) : void
 // {{{
@@ -595,6 +626,7 @@ PHP_MINIT_FUNCTION(yugioh)
 	zend_declare_property_long(yugioh_replay_class_entry, "hand_count", sizeof("hand_count") - 1, 0, ZEND_ACC_PUBLIC);
 	zend_declare_property_long(yugioh_replay_class_entry, "draw_count", sizeof("draw_count") - 1, 0, ZEND_ACC_PUBLIC);
 	zend_declare_property_null(yugioh_replay_class_entry, "players", sizeof("players") - 1, ZEND_ACC_PUBLIC);
+	zend_declare_property_bool(yugioh_replay_class_entry, "is_valid", sizeof("is_valid") - 1, 0, ZEND_ACC_PRIVATE);
 	// }}}
 
 	// class yugioh\card
