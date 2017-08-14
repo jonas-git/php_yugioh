@@ -4,6 +4,7 @@
 #define RR_HEADER_PROPS_SIZE 8
 
 #include <stdint.h>
+#include <stdio.h>
 
 struct rr_replay_header
 {
