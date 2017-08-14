@@ -102,17 +102,11 @@ static void extract_replay_data(struct rr_replay *replay, struct rr_replay_heade
 	for (i = 0; i < size; ++i) {
 		int32_t main_deck_size = *data_int32++;
 		replay->decks[i].size_main = main_deck_size;
-		replay->decks[i].main_deck = calloc(main_deck_size, sizeof(int32_t));
-		if (!replay->decks[i].main_deck)
-			exit(EXIT_FAILURE);
 		for (j = 0; j < main_deck_size; ++j)
 			replay->decks[i].main_deck[j] = *data_int32++;
 		
 		int32_t extra_deck_size = *data_int32++;
 		replay->decks[i].size_extra = extra_deck_size;
-		replay->decks[i].extra_deck = calloc(extra_deck_size, sizeof(int32_t));
-		if (!replay->decks[i].extra_deck)
-			exit(EXIT_FAILURE);
 		for (j = 0; j < extra_deck_size; ++j)
 			replay->decks[i].extra_deck[j] = *data_int32++;
 	}

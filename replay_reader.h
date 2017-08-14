@@ -2,6 +2,8 @@
 #define REPLAY_READER_H
 
 #define RR_HEADER_PROPS_SIZE 8
+#define RR_MAIN_DECK_MAX_SIZE 60
+#define RR_EXTRA_DECK_MAX_SIZE 15
 
 #include <stdint.h>
 #include <stdio.h>
@@ -21,8 +23,8 @@ struct rr_deck_info
 {
 	size_t size_main;
 	size_t size_extra;
-	int32_t *main_deck;
-	int32_t *extra_deck;
+	int32_t main_deck[RR_MAIN_DECK_MAX_SIZE];
+	int32_t extra_deck[RR_EXTRA_DECK_MAX_SIZE];
 };
 
 struct rr_replay
