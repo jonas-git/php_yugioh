@@ -5,7 +5,8 @@
 #define YGO_REPLAY_MAIN_SIZE_MAX 60
 #define YGO_REPLAY_EXTRA_SIZE_MAX 15
 #define YGO_REPLAY_NUM_PLAYERS_MAX 4
-// cannot use `sizeof(struct ygo_replay_header)` due to the possibility of padding.
+// cannot use `sizeof(struct ygo_replay_header)`
+// due to the possibility of padding.
 #define YGO_REPLAY_HEADER_SIZE \
 	(6 * sizeof(uint32_t) + sizeof(char[YGO_REPLAY_PROPS_SIZE]))
 
