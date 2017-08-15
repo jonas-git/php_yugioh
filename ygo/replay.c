@@ -8,8 +8,12 @@ int ygo_replay_read(struct ygo_replay *replay, const char *filename)
 		return YGO_REPLAY_ERR_FOPEN;
 
 	int err = ygo_replay_fread(replay, stream);
-	if (err != YGO_REPLAY_ERR_OK)
+	if (err != YGO_REPLAY_ERR_OK) {
+		// the error occured in `ygo_replay_fread` has higher
+		// priority than one that might occur in `fclose`.
+		fclose(stream);
 		return err;
+	}
 
 	if (fclose(stream) == EOF)
 		return YGO_REPLAY_ERR_FCLOSE;
