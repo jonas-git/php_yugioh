@@ -58,3 +58,26 @@ int ygo_replay_sread(struct ygo_replay *replay, const char *data, size_t size)
 	fputs(stderr, "ygo_replay_sread: not implemented");
 	return -1;
 }
+
+// if there is not enough data, a zero value is returned
+// and the `header` stays untouched. otherwise returns non-zero.
+static size_t ygo_replay_parse_header(struct ygo_replay_header *header,
+                                      const char *data, size_t size)
+{
+	if (YGO_REPLAY_HEADER_SIZE > size)
+		return 0;
+
+	const uint32_t *data_32 = (const uint32_t *)data;
+	header->id        = *data_32++;
+	header->version   = *data_32++;
+	header->flag      = *data_32++;
+	header->seed      = *data_32++;
+	header->data_size = *data_32++;
+	header->hash      = *data_32++;
+
+	const char *data_8 = (const char *)data_32;
+	for (unsigned int i = 0; i < YGO_REPLAY_PROPS_SIZE; ++i)
+		header->props[i] = *data_8++;
+
+	return YGO_REPLAY_HEADER_SIZE;
+}
