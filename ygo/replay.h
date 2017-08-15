@@ -21,8 +21,7 @@
 #include <stdio.h>
 
 // holds meta-information about a Yu-Gi-Oh! replay.
-struct ygo_replay_header
-{
+struct ygo_replay_header {
 	uint32_t id;
 	uint32_t version;
 	uint32_t flag;
@@ -34,8 +33,7 @@ struct ygo_replay_header
 
 // holds information about a single player in a replay
 // including his name and the cards in the deck he played.
-struct ygo_replay_deck
-{
+struct ygo_replay_deck {
 	char *owner;
 	uint32_t main[YGO_REPLAY_MAIN_SIZE_MAX];
 	uint32_t extra[YGO_REPLAY_EXTRA_SIZE_MAX];
@@ -48,8 +46,7 @@ struct ygo_replay_deck
 
 // holds general information about a yugioh duel (in a replay).
 // this does not contain the progress and the result of it.
-struct ygo_replay
-{
+struct ygo_replay {
 	struct ygo_replay_deck decks[YGO_REPLAY_NUM_PLAYERS_MAX];
 	struct ygo_replay_header header;
 	size_t players_size;
