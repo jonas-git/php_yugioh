@@ -6,6 +6,10 @@
 #define YGO_REPLAY_EXTRA_SIZE_MAX 15
 #define YGO_REPLAY_NUM_PLAYERS_MAX 4
 
+#define YGO_REPLAY_ERR_OK 0
+#define YGO_REPLAY_ERR_FOPEN 1
+#define YGO_REPLAY_ERR_FCLOSE 2
+
 #include <stdint.h>
 #include <stdio.h>
 
