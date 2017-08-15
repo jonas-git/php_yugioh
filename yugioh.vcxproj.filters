@@ -12,6 +12,9 @@
     <ClCompile Include="lzma\C\LzmaDec.c">
       <Filter>lzma</Filter>
     </ClCompile>
+    <ClCompile Include="ygo\replay.c">
+      <Filter>ygo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dice.h" />
@@ -19,10 +22,16 @@
     <ClInclude Include="replay_reader.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="yugioh.h" />
+    <ClInclude Include="ygo\replay.h">
+      <Filter>ygo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="lzma">
       <UniqueIdentifier>{8276e7d6-f082-4fe5-b02c-a52caa64b851}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ygo">
+      <UniqueIdentifier>{37307e2a-0dc2-4da7-85b1-377975bf9221}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

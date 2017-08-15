@@ -172,6 +172,7 @@
     <ClCompile Include="php_yugioh.c" />
     <ClCompile Include="replay_reader.c" />
     <ClCompile Include="util.c" />
+    <ClCompile Include="ygo\replay.c" />
     <ClCompile Include="yugioh.c" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +180,7 @@
     <ClInclude Include="php_yugioh.h" />
     <ClInclude Include="replay_reader.h" />
     <ClInclude Include="util.h" />
+    <ClInclude Include="ygo\replay.h" />
     <ClInclude Include="yugioh.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
