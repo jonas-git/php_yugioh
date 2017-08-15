@@ -21,10 +21,10 @@ struct rr_replay_header
 
 struct rr_deck_info
 {
-	size_t size_main;
-	size_t size_extra;
 	int32_t main_deck[RR_MAIN_DECK_MAX_SIZE];
 	int32_t extra_deck[RR_EXTRA_DECK_MAX_SIZE];
+	unsigned int size_main : 6; // ceil(log2(max_size))
+	unsigned int size_extra : 4; // ceil(log2(max_size))
 };
 
 struct rr_replay
