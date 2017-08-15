@@ -9,6 +9,9 @@
 #define YGO_REPLAY_ERR_OK 0
 #define YGO_REPLAY_ERR_FOPEN 1
 #define YGO_REPLAY_ERR_FCLOSE 2
+#define YGO_REPLAY_ERR_FSEEK 3
+#define YGO_REPLAY_ERR_FREAD 4
+#define YGO_REPLAY_ERR_MALLOC 5
 
 #include <stdint.h>
 #include <stdio.h>
