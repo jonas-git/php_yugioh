@@ -71,7 +71,7 @@ int ygo_replay_read(struct ygo_replay *replay, const char *filename);
  | replay:   pointer to a [struct ygo_replay]
  | stream:   pointer to an opened [FILE] containing compressed replay data
  */
-int ygo_replay_fread(struct ygo_replay *replay, const FILE *stream);
+int ygo_replay_fread(struct ygo_replay *replay, FILE *stream);
 
 /* ygo_replay_sread(replay, data, size):
  |     parses the passed `data` and writes the result

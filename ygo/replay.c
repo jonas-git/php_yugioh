@@ -22,7 +22,7 @@ int ygo_replay_read(struct ygo_replay *replay, const char *filename)
 	return 0;
 }
 
-int ygo_replay_fread(struct ygo_replay *replay, const FILE *stream)
+int ygo_replay_fread(struct ygo_replay *replay, FILE *stream)
 {
 	int err = 0;
 
