@@ -75,9 +75,9 @@ static size_t ygo_replay_parse_header(struct ygo_replay_header *header,
 	header->data_size = *data_32++;
 	header->hash      = *data_32++;
 
-	const char *data_8 = (const char *)data_32;
+	data = (const char *)data_32;
 	for (unsigned int i = 0; i < YGO_REPLAY_PROPS_SIZE; ++i)
-		header->props[i] = *data_8++;
+		header->props[i] = *data++;
 
 	return YGO_REPLAY_HEADER_SIZE;
 }
