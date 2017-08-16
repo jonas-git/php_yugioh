@@ -56,7 +56,7 @@ err_fseek:
 
 int ygo_replay_sread(struct ygo_replay *replay, const char *data, size_t size)
 {
-	fputs(stderr, "ygo_replay_sread: not implemented");
+	fputs("ygo_replay_sread: not implemented", stderr);
 	return -1;
 }
 
