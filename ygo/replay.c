@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "replay.h"
 
 int ygo_replay_read(struct ygo_replay *replay, const char *filename)
