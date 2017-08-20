@@ -5,6 +5,11 @@
 #define YGO_REPLAY_MAIN_SIZE_MAX 60
 #define YGO_REPLAY_EXTRA_SIZE_MAX 15
 #define YGO_REPLAY_NUM_PLAYERS_MAX 4
+
+// a player's name is not allowed to be longer than 20 characters:
+// https://github.com/Fluorohydride/ygopro/blob/master/gframe/network.h#L102
+#define YGO_REPLAY_PLAYER_SIZE_MAX 20
+
 // cannot use `sizeof(struct ygo_replay_header)`
 // due to the possibility of padding.
 #define YGO_REPLAY_HEADER_SIZE \
@@ -34,7 +39,9 @@ struct ygo_replay_header {
 // holds information about a single player in a replay
 // including his name and the cards in the deck he played.
 struct ygo_replay_deck {
-	char *owner;
+	// the player name is stored as a 16 bit wide string:
+	// https://github.com/Fluorohydride/ygopro/blob/master/gframe/network.h#L102
+	wchar_t owner[YGO_REPLAY_PLAYER_SIZE_MAX + 1];
 	uint32_t main[YGO_REPLAY_MAIN_SIZE_MAX];
 	uint32_t extra[YGO_REPLAY_EXTRA_SIZE_MAX];
 	// sizes of the following two fields are computed
